@@ -36,7 +36,37 @@ def generate_tokens(input_str):
 
 
 class Parser:
-    pass
+    def __init__(self, input_str):
+        self.input_str = input_str
+        self.tok = None
+        self.nextok = None
+        self.tokesn = generate_tokens(self.input_str)
+
+    def _move(self) -> None:
+        """Unconditinal move along input tokens"""
+        self.tok, self.nextok = self.nextok, next(self.tokens)
+
+    def _move_if(self, tokentype: str) -> bool:
+        if self.nextok and self.nextok.tokentype == tokentype:
+            self._move()
+            return True
+        else:
+            return False
+
+    def _expect(self, tokentype: str):
+        if self._move_if(tokentype):
+            pass
+        else:
+            raise SyntaxError(f"Expected {tokentype}, got {self.nextok}")
+
+    def expr(self):
+        pass
+
+    def term(self):
+        pass
+
+    def factor(self):
+        pass
 
 
 class TestTokens(unittest.TestCase):
