@@ -4,6 +4,7 @@
 from __future__ import annotations
 from typing import NamedTuple
 import re
+import unittest
 
 
 class Token(NamedTuple):
@@ -38,6 +39,19 @@ class Parser:
     pass
 
 
+class TestTokens(unittest.TestCase):
+    expected = [
+        Token(tok="NUM", tokvalue="3"),
+        Token(tok="PLUS", tokvalue="+"),
+        Token(tok="NUM", tokvalue="4"),
+        Token(tok="TIMES", tokvalue="*"),
+        Token(tok="NUM", tokvalue="5"),
+    ]
+
+    def test_345(self):
+        for got, exp in zip(generate_tokens("3 + 4 * 5"), self.expected):
+            self.assertEqual(got, exp)
+
+
 if __name__ == "__main__":
-    for tok in generate_tokens("3 + 4 * 5"):
-        print(tok)
+    unittest.main()
