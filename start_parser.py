@@ -12,10 +12,10 @@ class Token(NamedTuple):
 
     @classmethod
     def from_match(self, match: re.Match) -> Token:
-        return Token(match.lastgoup, match.group())
+        return Token(match.lastgroup, match.group())
 
 
-NAME = r"(?P<NAME>[a-zA-Z_]\w*"
+NAME = r"(?P<NAME>[a-zA-Z_]\w*)"
 NUM = r"(?P<NUM>\d+)"
 DIVIDE = r"(?P<DIVIDE>/)"
 TIMES = r"(?P<TIMES>\*)"
@@ -30,8 +30,8 @@ def generate_tokens(input_str):
     for m in re.finditer(
         "|".join([NAME, NUM, DIVIDE, TIMES, PLUS, MINUS, LPAREN, RPAREN, WS]), input_str
     ):
-        if m.lastgoup != "WS":
-            yield Token(m.lastgoup, m.group())
+        if m.lastgroup != "WS":
+            yield Token.from_match(m)
 
 
 class Parser:
@@ -39,4 +39,5 @@ class Parser:
 
 
 if __name__ == "__main__":
-    pass
+    for tok in generate_tokens("3 + 4 * 5"):
+        print(tok)
