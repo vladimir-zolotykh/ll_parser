@@ -41,11 +41,10 @@ class Parser:
 
 class TestTokens(unittest.TestCase):
     expected = [
-        Token(tok="NUM", tokvalue="3"),
-        Token(tok="PLUS", tokvalue="+"),
-        Token(tok="NUM", tokvalue="4"),
-        Token(tok="TIMES", tokvalue="*"),
-        Token(tok="NUM", tokvalue="5"),
+        Token(tok, tokvalue)
+        for tok, tokvalue in zip(
+            ["NUM", "PLUS", "NUM", "TIMES", "NUM"], ["3", "+", "4", "*", "5"]
+        )
     ]
 
     def test_345(self):
