@@ -42,17 +42,17 @@ class Parser:
     def __init__(self, input_str):
         self.input_str = input_str
         self.tok: Token | None = None
-        self.nextok: Token | None = None
+        self.nexttok: Token | None = None
         self.tokens = generate_tokens(self.input_str)
         self._move()
         self.expr()
 
     def _move(self) -> None:
         """Unconditinal move along input tokens"""
-        self.tok, self.nextok = self.nextok, next(self.tokens)
+        self.tok, self.nexttok = self.nexttok, next(self.tokens)
 
     def _move_if(self, tokentype: str) -> bool:
-        if self.nextok and self.nextok.typ == tokentype:
+        if self.nexttok and self.nexttok.typ == tokentype:
             self._move()
             return True
         else:
@@ -60,12 +60,12 @@ class Parser:
 
     def _expect(self, tokentype: str):
         if not self._move_if(tokentype):
-            raise SyntaxError(f"Expected {tokentype}, got {self.nextok}")
+            raise SyntaxError(f"Expected {tokentype}, got {self.nexttok}")
 
     def expr(self):
         res = self.term()
         while True:
-            if self.nextok == "PLUS":
+            if self.nexttok == "PLUS":
                 self._move()
                 res += self.term()
             elif self.nexttok == "MINUS":
@@ -78,10 +78,10 @@ class Parser:
     def term(self):
         res = self.factor()
         while True:
-            if self.nextok == "TIMES":
+            if self.nexttok == "TIMES":
                 self._move()
                 res *= self.factor()
-            elif self.nextok == "DIVIDE":
+            elif self.nexttok == "DIVIDE":
                 self._move()
                 res /= self.factor()
             else:
@@ -95,7 +95,7 @@ class Parser:
             res = self.expr()
             self._expect("RPAREN")
         else:
-            res = int(self.nexttok.value())
+            res = int(self.nexttok.value)
         return res
 
 
