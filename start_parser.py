@@ -8,8 +8,8 @@ import unittest
 
 
 class Token(NamedTuple):
-    tok: str
-    tokvalue: str
+    tok: str  # key
+    tokvalue: str  # value
 
     @classmethod
     def from_match(self, match: re.Match) -> Token:
@@ -40,7 +40,9 @@ class Parser:
         self.input_str = input_str
         self.tok = None
         self.nextok = None
-        self.tokesn = generate_tokens(self.input_str)
+        self.tokens = generate_tokens(self.input_str)
+        self._move()
+        self.expr()
 
     def _move(self) -> None:
         """Unconditinal move along input tokens"""
@@ -54,19 +56,44 @@ class Parser:
             return False
 
     def _expect(self, tokentype: str):
-        if self._move_if(tokentype):
-            pass
-        else:
+        if not self._move_if(tokentype):
             raise SyntaxError(f"Expected {tokentype}, got {self.nextok}")
 
     def expr(self):
-        pass
+        term_expr = self.term()
+        while True:
+            if self.nextok == PLUS:
+                self._move()
+                term_expr += self.term()
+            elif self.nexttok == MINUS:
+                self._move()
+                term_expr -= self.term()
+            else:
+                break
+        return term_expr
 
     def term(self):
-        pass
+        factor_expr = self.factor()
+        while True:
+            if self.nextok == TIMES:
+                self._move()
+                factor_expr *= self.factor()
+            elif self.nextok == DIVIDE:
+                self._move()
+                factor_expr /= self.factor()
+            else:
+                break
+        return factor_expr
 
     def factor(self):
-        pass
+        res: int | None = None
+        if self.nexttok == LPAREN:
+            self._move()
+            res = self.expr()
+            self._expect(RPAREN)
+        else:
+            res = int(self.nexttok.tokvalue())
+        return res
 
 
 class TestTokens(unittest.TestCase):
