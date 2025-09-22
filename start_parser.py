@@ -8,8 +8,11 @@ import unittest
 
 
 class Token(NamedTuple):
-    tok: str  # key
-    tokvalue: str  # value
+    typ: str  # eg., NUM, PLUS
+    value: str  # "3", "+"
+
+    def __eq__(self, other: str) -> bool:
+        return self.tok == other
 
     @classmethod
     def from_match(self, match: re.Match) -> Token:
@@ -38,8 +41,8 @@ def generate_tokens(input_str):
 class Parser:
     def __init__(self, input_str):
         self.input_str = input_str
-        self.tok = None
-        self.nextok = None
+        self.tok: Token | None = None
+        self.nextok: Token | None = None
         self.tokens = generate_tokens(self.input_str)
         self._move()
         self.expr()
@@ -49,7 +52,7 @@ class Parser:
         self.tok, self.nextok = self.nextok, next(self.tokens)
 
     def _move_if(self, tokentype: str) -> bool:
-        if self.nextok and self.nextok.tokentype == tokentype:
+        if self.nextok and self.nextok.typ == tokentype:
             self._move()
             return True
         else:
@@ -60,46 +63,46 @@ class Parser:
             raise SyntaxError(f"Expected {tokentype}, got {self.nextok}")
 
     def expr(self):
-        term_expr = self.term()
+        res = self.term()
         while True:
-            if self.nextok == PLUS:
+            if self.nextok == "PLUS":
                 self._move()
-                term_expr += self.term()
-            elif self.nexttok == MINUS:
+                res += self.term()
+            elif self.nexttok == "MINUS":
                 self._move()
-                term_expr -= self.term()
+                res -= self.term()
             else:
                 break
-        return term_expr
+        return res
 
     def term(self):
-        factor_expr = self.factor()
+        res = self.factor()
         while True:
-            if self.nextok == TIMES:
+            if self.nextok == "TIMES":
                 self._move()
-                factor_expr *= self.factor()
-            elif self.nextok == DIVIDE:
+                res *= self.factor()
+            elif self.nextok == "DIVIDE":
                 self._move()
-                factor_expr /= self.factor()
+                res /= self.factor()
             else:
                 break
-        return factor_expr
+        return res
 
     def factor(self):
         res: int | None = None
-        if self.nexttok == LPAREN:
+        if self.nexttok == "LPAREN":
             self._move()
             res = self.expr()
-            self._expect(RPAREN)
+            self._expect("RPAREN")
         else:
-            res = int(self.nexttok.tokvalue())
+            res = int(self.nexttok.value())
         return res
 
 
 class TestTokens(unittest.TestCase):
     expected = [
-        Token(tok, tokvalue)
-        for tok, tokvalue in zip(
+        Token(typ, value)
+        for typ, value in zip(
             ["NUM", "PLUS", "NUM", "TIMES", "NUM"], ["3", "+", "4", "*", "5"]
         )
     ]
