@@ -12,7 +12,7 @@ class Token(NamedTuple):
     value: str  # "3", "+"
 
     def __eq__(self, other: str) -> bool:
-        return self.tok == other
+        return self.typ == other
 
     @classmethod
     def from_match(self, match: re.Match) -> Token:
