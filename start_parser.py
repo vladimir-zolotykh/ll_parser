@@ -113,4 +113,6 @@ class TestTokens(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    # unittest.main()
+    p = Parser("3 + 4 * 5")
+    print(p.expr())
