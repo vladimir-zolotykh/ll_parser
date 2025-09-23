@@ -39,13 +39,13 @@ def generate_tokens(input_str):
 
 
 class Parser:
-    def __init__(self, input_str):
+    def parse(self, input_str):
         self.input_str = input_str
         self.tok: Token | None = None
         self.nexttok: Token | None = None
         self.tokens = generate_tokens(self.input_str)
         self._move()
-        self.expr()
+        return self.expr()
 
     def _move(self) -> None:
         """Unconditinal move along input tokens"""
@@ -117,5 +117,5 @@ class TestTokens(unittest.TestCase):
 
 if __name__ == "__main__":
     # unittest.main()
-    p = Parser("3 + 4 * 5")
-    print(p.expr())
+    p = Parser()
+    print(p.parse("3 + 4 * 5"))
