@@ -44,32 +44,32 @@ class Parser:
         self.tok: Token | None = None
         self.nexttok: Token | None = None
         self.tokens = generate_tokens(self.input_str)
-        self._move()
+        self._advance()
         return self.expr()
 
-    def _move(self) -> None:
+    def _advance(self) -> None:
         """Unconditinal move along input tokens"""
         self.tok, self.nexttok = self.nexttok, next(self.tokens, None)
 
-    def _move_if(self, tokentype: str) -> bool:
+    def _accept(self, tokentype: str) -> bool:
         if self.nexttok and self.nexttok.typ == tokentype:
-            self._move()
+            self._advance()
             return True
         else:
             return False
 
     def _expect(self, tokentype: str):
-        if not self._move_if(tokentype):
+        if not self._accept(tokentype):
             raise SyntaxError(f"Expected {tokentype}, got {self.nexttok}")
 
     def expr(self):
         res = self.term()
         while True:
             if self.nexttok == "PLUS":
-                self._move()
+                self._advance()
                 res += self.term()
             elif self.nexttok == "MINUS":
-                self._move()
+                self._advance()
                 res -= self.term()
             else:
                 break
@@ -79,10 +79,10 @@ class Parser:
         res = self.factor()
         while True:
             if self.nexttok == "TIMES":
-                self._move()
+                self._advance()
                 res *= self.factor()
             elif self.nexttok == "DIVIDE":
-                self._move()
+                self._advance()
                 res /= self.factor()
             else:
                 break
@@ -91,12 +91,12 @@ class Parser:
     def factor(self):
         res: int | None = None
         if self.nexttok == "LPAREN":
-            self._move()
+            self._advance()
             res = self.expr()
             self._expect("RPAREN")
         elif self.nexttok == "NUM":
             res = int(self.nexttok.value)
-            # self._move()
+            # self._advance()
         else:
             raise SyntaxError(f"Expected NUM, got {self.nexttok}")
         return res
