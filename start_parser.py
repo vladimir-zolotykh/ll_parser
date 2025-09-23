@@ -49,7 +49,7 @@ class Parser:
 
     def _move(self) -> None:
         """Unconditinal move along input tokens"""
-        self.tok, self.nexttok = self.nexttok, next(self.tokens)
+        self.tok, self.nexttok = self.nexttok, next(self.tokens, None)
 
     def _move_if(self, tokentype: str) -> bool:
         if self.nexttok and self.nexttok.typ == tokentype:
