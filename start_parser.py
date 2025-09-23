@@ -96,7 +96,7 @@ class Parser:
             self._expect("RPAREN")
         elif self.nexttok == "NUM":
             res = int(self.nexttok.value)
-            # self._advance()
+            self._advance()
         else:
             raise SyntaxError(f"Expected NUM, got {self.nexttok}")
         return res
