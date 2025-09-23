@@ -94,8 +94,11 @@ class Parser:
             self._move()
             res = self.expr()
             self._expect("RPAREN")
-        else:
+        elif self.nexttok == "NUM":
             res = int(self.nexttok.value)
+            # self._move()
+        else:
+            raise SyntaxError(f"Expected NUM, got {self.nexttok}")
         return res
 
 
