@@ -11,11 +11,9 @@ class Token(NamedTuple):
     typ: str  # eg., NUM, PLUS
     value: str  # "3", "+"
 
-    def __eq__(self, other: str) -> bool:
-        return self.typ == other
-
     @classmethod
     def from_match(self, match: re.Match) -> Token:
+        assert match.lastgroup
         return Token(match.lastgroup, match.group())
 
 
@@ -39,7 +37,7 @@ def generate_tokens(input_str):
 
 
 class Parser:
-    def parse(self, input_str):
+    def parse(self, input_str: str) -> int:
         self.input_str = input_str
         self.tok: Token | None = None
         self.nexttok: Token | None = None
@@ -86,13 +84,14 @@ class Parser:
                 break
         return res
 
-    def factor(self):
-        res: int | None = None
+    def factor(self) -> int:
+        res: int
         if self.nexttok == "LPAREN":
             self._advance()
             res = self.expr()
             self._expect("RPAREN")
         elif self.nexttok == "NUM":
+            assert self.nexttok
             res = int(self.nexttok.value)
             self._advance()
         else:
