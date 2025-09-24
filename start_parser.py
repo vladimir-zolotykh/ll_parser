@@ -73,29 +73,26 @@ class Parser:
 
     def term(self):
         res = self.factor()
-        while True:
-            if self.nexttok == "TIMES":
-                self._advance()
-                res *= self.factor()
-            elif self.nexttok == "DIVIDE":
-                self._advance()
-                res /= self.factor()
-            else:
-                break
+        while self._accept("TIMES") or self._accept("DIVIDE"):
+            op = self.tok
+            right = self.factor()
+            if op == "TIMES":
+                res *= right
+            elif op == "DIVIDE":
+                res /= right
         return res
 
     def factor(self) -> int:
-        res: int
-        if self.nexttok == "LPAREN":
-            self._advance()
+        res: int = 0
+        if self._accept("NUM"):
+            assert self.tok
+            res = int(self.tok.value)
+        elif self._accept("LPAREN"):
             res = self.expr()
             self._expect("RPAREN")
-        elif self.nexttok == "NUM":
-            assert self.nexttok
-            res = int(self.nexttok.value)
-            self._advance()
         else:
-            raise SyntaxError(f"Expected NUM, got {self.nexttok}")
+            assert self.tok
+            raise SyntaxError(f"Expected NUM | LPAREN, got {self.tok.typ}")
         return res
 
 
