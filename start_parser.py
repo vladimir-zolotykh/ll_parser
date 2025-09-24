@@ -64,15 +64,13 @@ class Parser:
 
     def expr(self):
         res = self.term()
-        while True:
-            if self.nexttok == "PLUS":
-                self._advance()
-                res += self.term()
-            elif self.nexttok == "MINUS":
-                self._advance()
-                res -= self.term()
-            else:
-                break
+        while self._accept("PLUS") or self._accept("MINUS"):
+            op = self.tok
+            right = self.term()
+            if op == "PLUS":
+                res += right
+            elif op == "MINUS":
+                res -= right
         return res
 
     def term(self):
