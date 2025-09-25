@@ -63,7 +63,7 @@ class Parser:
     def expr(self):
         res = self.term()
         while self._accept("PLUS") or self._accept("MINUS"):
-            op = self.tok
+            op = self.tok.typ
             right = self.term()
             if op == "PLUS":
                 res += right
@@ -74,7 +74,7 @@ class Parser:
     def term(self):
         res = self.factor()
         while self._accept("TIMES") or self._accept("DIVIDE"):
-            op = self.tok
+            op = self.tok.typ
             right = self.factor()
             if op == "TIMES":
                 res *= right
