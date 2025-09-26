@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import NamedTuple
 import re
 import unittest
+from toktype import atomdict
 
 
 class Token(NamedTuple):
@@ -15,19 +16,6 @@ class Token(NamedTuple):
     def from_match(self, match: re.Match) -> Token:
         assert match.lastgroup
         return Token(match.lastgroup, match.group())
-
-
-atomdict = {
-    "NAME": r"(?P<NAME>[a-zA-Z_]\w*)",
-    "NUM": r"(?P<NUM>\d+)",
-    "DIVIDE": r"(?P<DIVIDE>/)",
-    "TIMES": r"(?P<TIMES>\*)",
-    "PLUS": r"(?P<PLUS>\+)",
-    "MINUS": r"(?P<MINUS>-)",
-    "LPAREN": r"(?P<LPAREN>\()",
-    "RPAREN": r"(?P<RPAREN>\))",
-    "WS": r"(?P<WS>\s*)",
-}
 
 
 def generate_tokens(input_str):
