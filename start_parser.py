@@ -55,7 +55,7 @@ class Parser:
             tok := self._accept(Toktype.MINUS)
         ):
             op: Toktype = tok.typ
-            right = self.term()
+            right: float = self.term()
             if op == Toktype.PLUS:
                 res += right
             elif op == Toktype.MINUS:
@@ -69,7 +69,7 @@ class Parser:
             tok := self._accept(Toktype.DIVIDE)
         ):
             op: Toktype = tok.typ
-            right = self.factor()
+            right: float = self.factor()
             if op == Toktype.TIMES:
                 res *= right
             elif op == Toktype.DIVIDE:
@@ -77,7 +77,7 @@ class Parser:
         return res
 
     def factor(self) -> float:
-        res: float = 0.0
+        res: float
         tok: Token | None
         if tok := self._accept(Toktype.NUM):
             res = float(tok.value)
