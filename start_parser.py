@@ -39,9 +39,8 @@ class Parser:
 
     def _accept(self, toktype: Toktype) -> Token | None:
         if self.nexttok and self.nexttok.typ == toktype:
-            tok: Token = cast(Token, self.tok)
             self._advance()
-            return tok
+            return self.tok
         return None
 
     def _expect(self, toktype: Toktype) -> None:
