@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
 from __future__ import annotations
-from typing import NamedTuple
+from typing import NamedTuple, cast
 import re
 import unittest
 from toktype import atomdict, Toktype
@@ -25,7 +25,7 @@ def generate_tokens(input_str):
 
 
 class Parser:
-    def parse(self, input_str: str) -> int:
+    def parse(self, input_str: str) -> float:
         self.input_str = input_str
         self.tok: Token | None = None
         self.nexttok: Token | None = None
@@ -37,51 +37,55 @@ class Parser:
         """Unconditinal move along input tokens"""
         self.tok, self.nexttok = self.nexttok, next(self.tokens, None)
 
-    def _accept(self, tokentype: str) -> bool:
-        if self.nexttok and self.nexttok.typ == tokentype:
+    def _accept(self, toktype: Toktype) -> Token | None:
+        if self.nexttok and self.nexttok.typ == toktype:
+            tok: Token = cast(Token, self.tok)
             self._advance()
-            return True
-        else:
-            return False
+            return tok
+        return None
 
-    def _expect(self, tokentype: str):
-        if not self._accept(tokentype):
-            raise SyntaxError(f"Expected {tokentype}, got {self.nexttok}")
+    def _expect(self, toktype: Toktype) -> None:
+        if not self._accept(toktype):
+            raise SyntaxError(f"Expected {toktype}, got {self.nexttok}")
 
-    def expr(self):
-        res = self.term()
-        while self._accept("PLUS") or self._accept("MINUS"):
-            op = self.tok.typ
+    def expr(self) -> float:
+        res: float = self.term()
+        tok: Token | None
+        while (tok := self._accept(Toktype.PLUS)) or (
+            tok := self._accept(Toktype.MINUS)
+        ):
+            op: Toktype = tok.typ
             right = self.term()
-            if op == "PLUS":
+            if op == Toktype.PLUS:
                 res += right
-            elif op == "MINUS":
+            elif op == Toktype.MINUS:
                 res -= right
         return res
 
-    def term(self) -> int:
-        res = self.factor()
-        while self._accept("TIMES") or self._accept("DIVIDE"):
-            assert self.tok
-            op: Toktype = self.tok.typ
+    def term(self) -> float:
+        res: float = self.factor()
+        tok: Token | None
+        while (tok := self._accept(Toktype.TIMES)) or (
+            tok := self._accept(Toktype.DIVIDE)
+        ):
+            op: Toktype = tok.typ
             right = self.factor()
             if op == Toktype.TIMES:
                 res *= right
             elif op == Toktype.DIVIDE:
-                res //= right
+                res /= right
         return res
 
-    def factor(self) -> int:
-        res: int = 0
-        if self._accept("NUM"):
-            assert self.tok
-            res = int(self.tok.value)
-        elif self._accept("LPAREN"):
+    def factor(self) -> float:
+        res: float = 0.0
+        tok: Token | None
+        if tok := self._accept(Toktype.NUM):
+            res = float(tok.value)
+        elif tok := self._accept(Toktype.LPAREN):
             res = self.expr()
-            self._expect("RPAREN")
+            self._expect(Toktype.RPAREN)
         else:
-            assert self.tok
-            raise SyntaxError(f"Expected NUM | LPAREN, got {self.tok.typ}")
+            raise SyntaxError(f"Expected NUM | LPAREN, got {tok}")
         return res
 
 
