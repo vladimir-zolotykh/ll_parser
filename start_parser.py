@@ -65,10 +65,10 @@ class Parser:
             assert self.tok
             op: Toktype = self.tok.typ
             right = self.factor()
-            if op == "TIMES":
+            if op == Toktype.TIMES:
                 res *= right
-            elif op == "DIVIDE":
-                res /= right
+            elif op == Toktype.DIVIDE:
+                res //= right
         return res
 
     def factor(self) -> int:
