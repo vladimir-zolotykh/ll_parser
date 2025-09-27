@@ -59,10 +59,11 @@ class Parser:
                 res -= right
         return res
 
-    def term(self):
+    def term(self) -> int:
         res = self.factor()
         while self._accept("TIMES") or self._accept("DIVIDE"):
-            op = self.tok.typ
+            assert self.tok
+            op: Toktype = self.tok.typ
             right = self.factor()
             if op == "TIMES":
                 res *= right
