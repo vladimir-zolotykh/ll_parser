@@ -5,17 +5,17 @@ from __future__ import annotations
 from typing import NamedTuple
 import re
 import unittest
-from toktype import atomdict
+from toktype import atomdict, Toktype
 
 
 class Token(NamedTuple):
-    typ: str  # eg., NUM, PLUS
+    typ: Toktype
     value: str  # "3", "+"
 
     @classmethod
     def from_match(self, match: re.Match) -> Token:
         assert match.lastgroup
-        return Token(match.lastgroup, match.group())
+        return Token(Toktype[match.lastgroup], match.group())
 
 
 def generate_tokens(input_str):
@@ -85,10 +85,13 @@ class Parser:
 
 
 class TestTokens(unittest.TestCase):
+    """Test generate_tokens() function"""
+
     expected = [
         Token(typ, value)
         for typ, value in zip(
-            ["NUM", "PLUS", "NUM", "TIMES", "NUM"], ["3", "+", "4", "*", "5"]
+            [Toktype.NUM, Toktype.PLUS, Toktype.NUM, Toktype.TIMES, Toktype.NUM],
+            ["3", "+", "4", "*", "5"],
         )
     ]
 
