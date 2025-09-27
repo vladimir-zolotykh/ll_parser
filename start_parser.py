@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
 from __future__ import annotations
-from typing import NamedTuple, cast
+from typing import NamedTuple
 import re
 import unittest
 from toktype import atomdict, Toktype
