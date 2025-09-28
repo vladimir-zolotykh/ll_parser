@@ -6,7 +6,8 @@ from typing import NamedTuple
 import re
 import unittest
 from toktype import atomdict, Toktype
-import node
+import node as N
+import visitor as V
 
 
 class Token(NamedTuple):
@@ -26,7 +27,7 @@ def generate_tokens(input_str):
 
 
 class Parser:
-    def parse(self, input_str: str) -> Node:
+    def parse(self, input_str: str) -> N.Node:
         self.input_str = input_str
         self.tok: Token | None = None
         self.nexttok: Token | None = None
@@ -48,39 +49,39 @@ class Parser:
         if not self._accept(toktype):
             raise SyntaxError(f"Expected {toktype}, got {self.nexttok}")
 
-    def expr(self) -> node.Node:
-        res: node.Node = self.term()
+    def expr(self) -> N.Node:
+        res: N.Node = self.term()
         tok: Token | None
         while (tok := self._accept(Toktype.PLUS)) or (
             tok := self._accept(Toktype.MINUS)
         ):
             op: Toktype = tok.typ
-            right: node.Node = self.term()
+            right: N.Node = self.term()
             if op == Toktype.PLUS:
-                res = node.Add(res, right)
+                res = N.Add(res, right)
             elif op == Toktype.MINUS:
-                res = node.Sub(res, right)
+                res = N.Sub(res, right)
         return res
 
-    def term(self) -> node.Node:
-        res: node.Node = self.factor()
+    def term(self) -> N.Node:
+        res: N.Node = self.factor()
         tok: Token | None
         while (tok := self._accept(Toktype.TIMES)) or (
             tok := self._accept(Toktype.DIVIDE)
         ):
             op: Toktype = tok.typ
-            right: node.Node = self.factor()
+            right: N.Node = self.factor()
             if op == Toktype.TIMES:
-                res = node.Mul(res, right)
+                res = N.Mul(res, right)
             elif op == Toktype.DIVIDE:
-                res = node.Div(res, right)
+                res = N.Div(res, right)
         return res
 
-    def factor(self) -> node.Node:
-        res: node.Node
+    def factor(self) -> N.Node:
+        res: N.Node
         tok: Token | None
         if tok := self._accept(Toktype.NUM):
-            res = node.Number(tok.value)
+            res = N.Number(tok.value)
         elif tok := self._accept(Toktype.LPAREN):
             res = self.expr()
             self._expect(Toktype.RPAREN)
@@ -108,4 +109,6 @@ class TestTokens(unittest.TestCase):
 if __name__ == "__main__":
     # unittest.main()
     p = Parser()
-    print(p.parse("3 + 4 * 5"))
+    node: N.Node = p.parse("3 + 4 * 5")
+    v: V.PrefixNotation = V.PrefixNotation()
+    print(v.visit(node))

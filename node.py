@@ -19,8 +19,8 @@ class BinaryOperator(Node):
 
 
 class Number(Node):
-    def __init__(self, val):
-        self.val = val
+    def __init__(self, value):
+        self.value = value
 
 
 class Add(BinaryOperator):
