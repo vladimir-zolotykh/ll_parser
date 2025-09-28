@@ -6,6 +6,7 @@ from typing import NamedTuple
 import re
 import unittest
 from toktype import atomdict, Toktype
+import node
 
 
 class Token(NamedTuple):
@@ -25,7 +26,7 @@ def generate_tokens(input_str):
 
 
 class Parser:
-    def parse(self, input_str: str) -> float:
+    def parse(self, input_str: str) -> Node:
         self.input_str = input_str
         self.tok: Token | None = None
         self.nexttok: Token | None = None
@@ -47,39 +48,39 @@ class Parser:
         if not self._accept(toktype):
             raise SyntaxError(f"Expected {toktype}, got {self.nexttok}")
 
-    def expr(self) -> float:
-        res: float = self.term()
+    def expr(self) -> node.Node:
+        res: node.Node = self.term()
         tok: Token | None
         while (tok := self._accept(Toktype.PLUS)) or (
             tok := self._accept(Toktype.MINUS)
         ):
             op: Toktype = tok.typ
-            right: float = self.term()
+            right: node.Node = self.term()
             if op == Toktype.PLUS:
-                res += right
+                res = node.Add(res, right)
             elif op == Toktype.MINUS:
-                res -= right
+                res = node.Sub(res, right)
         return res
 
-    def term(self) -> float:
-        res: float = self.factor()
+    def term(self) -> node.Node:
+        res: node.Node = self.factor()
         tok: Token | None
         while (tok := self._accept(Toktype.TIMES)) or (
             tok := self._accept(Toktype.DIVIDE)
         ):
             op: Toktype = tok.typ
-            right: float = self.factor()
+            right: node.Node = self.factor()
             if op == Toktype.TIMES:
-                res *= right
+                res = node.Mul(res, right)
             elif op == Toktype.DIVIDE:
-                res /= right
+                res = node.Div(res, right)
         return res
 
-    def factor(self) -> float:
-        res: float
+    def factor(self) -> node.Node:
+        res: node.Node
         tok: Token | None
         if tok := self._accept(Toktype.NUM):
-            res = float(tok.value)
+            res = node.Number(tok.value)
         elif tok := self._accept(Toktype.LPAREN):
             res = self.expr()
             self._expect(Toktype.RPAREN)
