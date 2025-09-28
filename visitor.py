@@ -18,11 +18,11 @@ class Visitor:
 
 
 class PrefixNotation(Visitor):
-    def visit_number(self, node: N.Node) -> str:
+    def visit_number(self, node: N.Number) -> str:
         return f"{str(node.value)}"
 
-    def visit_add(self, node: N.Node) -> str:
+    def visit_add(self, node: N.BinaryOperator) -> str:
         return f"(+ {self.visit(node.left)} {self.visit(node.right)})"
 
-    def visit_mul(self, node: N.Node) -> str:
+    def visit_mul(self, node: N.BinaryOperator) -> str:
         return f"(* {self.visit(node.left)} {self.visit(node.right)})"
