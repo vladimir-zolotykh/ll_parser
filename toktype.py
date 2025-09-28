@@ -32,8 +32,9 @@ class Toktype(Enum):
     RPAREN = "RPAREN"
     WS = "WS"
 
-    def __init__(self, value):
-        self.pattern = atomdict[value]
+    @property
+    def pattern(self) -> str:
+        return atomdict[self.value]
 
 
 # >>> num = Toktype.NUM
