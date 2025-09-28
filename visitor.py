@@ -15,7 +15,7 @@ class Visitor(Generic[T]):
         meth = getattr(self, self._get_method_name(node), self.visit_generic)
         return meth(node)
 
-    def visit_generic(self, node: N.Node) -> T:
+    def visit_generic(self, node: N.Node) -> NoReturn:
         raise TypeError(f"No method {self._get_method_name(node)} to visit {node}")
 
 
